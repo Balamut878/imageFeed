@@ -46,6 +46,14 @@
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                     <state key="normal" image="Active"/>
                                                 </button>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LMa-th-jyW" userLabel="gradient">
+                                                    <rect key="frame" x="16" y="216" width="361" height="30"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="343" id="LXj-KP-QTP"/>
+                                                        <constraint firstAttribute="height" constant="30" id="bwL-tx-fDk"/>
+                                                    </constraints>
+                                                </view>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="27 августа 2022" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bOH-gP-rDG" userLabel="dataLabel">
                                                     <rect key="frame" x="24" y="222" width="353" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
@@ -57,7 +65,10 @@
                                                 <constraint firstItem="DCx-1P-CM0" firstAttribute="top" secondItem="RNG-cl-Wta" secondAttribute="top" id="1cV-ed-om7"/>
                                                 <constraint firstItem="RNG-cl-Wta" firstAttribute="bottom" secondItem="bOH-gP-rDG" secondAttribute="bottom" constant="8" id="8Q8-Au-ED5"/>
                                                 <constraint firstItem="DCx-1P-CM0" firstAttribute="trailing" secondItem="RNG-cl-Wta" secondAttribute="trailing" id="AZB-aE-giH"/>
+                                                <constraint firstItem="LMa-th-jyW" firstAttribute="leading" secondItem="RNG-cl-Wta" secondAttribute="leading" id="UUp-Mj-fft"/>
                                                 <constraint firstItem="bOH-gP-rDG" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="RNG-cl-Wta" secondAttribute="trailing" id="XAq-v7-qR9"/>
+                                                <constraint firstItem="RNG-cl-Wta" firstAttribute="bottom" secondItem="LMa-th-jyW" secondAttribute="bottom" id="air-KL-qsK"/>
+                                                <constraint firstItem="RNG-cl-Wta" firstAttribute="trailing" secondItem="LMa-th-jyW" secondAttribute="trailing" id="iSX-Lx-6a2"/>
                                                 <constraint firstItem="bOH-gP-rDG" firstAttribute="leading" secondItem="RNG-cl-Wta" secondAttribute="leading" constant="8" id="sqU-n1-npM"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -70,6 +81,7 @@
                                         </constraints>
                                         <connections>
                                             <outlet property="dataLabel" destination="bOH-gP-rDG" id="Kwz-vc-8YD"/>
+                                            <outlet property="gradient" destination="LMa-th-jyW" id="tIY-pJ-bEn"/>
                                             <outlet property="imageCell" destination="RNG-cl-Wta" id="9aR-fi-ICS"/>
                                             <outlet property="likeButton" destination="DCx-1P-CM0" id="X2b-Of-zEc"/>
                                         </connections>

@@ -10,6 +10,7 @@ import UIKit
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
     
+    @IBOutlet var gradient: UIView!
     @IBOutlet var imageCell: UIImageView!
     @IBOutlet var likeButton: UIButton!
     @IBOutlet var dataLabel: UILabel!
@@ -17,21 +18,26 @@ final class ImagesListCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        setupGradientForLabel()
+        setupGradient()
     }
 
-    private func setupGradientForLabel() {
+    private func setupGradient() {
+        
         gradientLayer.colors = [
-            UIColor.clear.cgColor,
-            UIColor.black.withAlphaComponent(0.6).cgColor
+            UIColor.black.withAlphaComponent(0.0).cgColor,
+            UIColor.black.withAlphaComponent(0.2).cgColor
         ]
+        
         gradientLayer.locations = [0.0, 1.0]
-        dataLabel.layer.insertSublayer(gradientLayer, at: 0)
+        gradient.layer.insertSublayer(gradientLayer, at: 0)
+        gradient.layer.cornerRadius = 16
+        gradient.layer.masksToBounds = true
+        gradient.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        gradientLayer.frame = dataLabel.bounds
+        gradientLayer.frame = gradient.bounds
     }
 }
 
