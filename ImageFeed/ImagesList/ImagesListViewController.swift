@@ -13,8 +13,8 @@ final class ImagesListViewController: UIViewController {
     
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
+        formatter.dateFormat = "dd MMMM yyyy"
+        formatter.locale = Locale(identifier: "ru_RU")
         return formatter
     }()
     
@@ -51,8 +51,8 @@ extension ImagesListViewController {
         cell.imageCell.image = image
         cell.dataLabel.text = dateFormatter.string(from: Date())
         
-        let isLiked = indexPath.row % 2 == 0
-        let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
+        let isLiked = indexPath.row % 2 != 0
+        let likeImage = isLiked ? UIImage(named: "Active") : UIImage(named: "No Active")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
 }

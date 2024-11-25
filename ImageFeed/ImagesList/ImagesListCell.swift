@@ -10,10 +10,10 @@ import UIKit
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
     
-    @IBOutlet var gradient: UIView!
-    @IBOutlet var imageCell: UIImageView!
-    @IBOutlet var likeButton: UIButton!
-    @IBOutlet var dataLabel: UILabel!
+    @IBOutlet weak var gradient: UIView!
+    @IBOutlet weak var imageCell: UIImageView!
+    @IBOutlet weak var likeButton: UIButton!
+    @IBOutlet weak var dataLabel: UILabel!
     private let gradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
