@@ -11,7 +11,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		019B18AF2CF1369F0078A7AF /* Exceptions for "ImageFeed" folder in "ImageFeed" target */ = {
+		01BBC3052CF5F0C000CECA06 /* Exceptions for "ImageFeed" folder in "ImageFeed" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -21,10 +21,10 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		019B189F2CF1369E0078A7AF /* ImageFeed */ = {
+		01BBC2FD2CF5F0C000CECA06 /* ImageFeed */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				019B18AF2CF1369F0078A7AF /* Exceptions for "ImageFeed" folder in "ImageFeed" target */,
+				01BBC3052CF5F0C000CECA06 /* Exceptions for "ImageFeed" folder in "ImageFeed" target */,
 			);
 			path = ImageFeed;
 			sourceTree = "<group>";
@@ -45,7 +45,7 @@
 		019B18942CF1369E0078A7AF = {
 			isa = PBXGroup;
 			children = (
-				019B189F2CF1369E0078A7AF /* ImageFeed */,
+				01BBC2FD2CF5F0C000CECA06 /* ImageFeed */,
 				019B189E2CF1369E0078A7AF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -74,7 +74,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				019B189F2CF1369E0078A7AF /* ImageFeed */,
+				01BBC2FD2CF5F0C000CECA06 /* ImageFeed */,
 			);
 			name = ImageFeed;
 			packageProductDependencies = (
