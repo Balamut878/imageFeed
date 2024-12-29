@@ -15,12 +15,12 @@ final class ImagesListCell: UITableViewCell {
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var dataLabel: UILabel!
     private let gradientLayer = CAGradientLayer()
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         setupGradient()
     }
-
+    
     private func setupGradient() {
         
         gradientLayer.colors = [
@@ -34,7 +34,7 @@ final class ImagesListCell: UITableViewCell {
         gradient.layer.masksToBounds = true
         gradient.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
     }
-
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         gradientLayer.frame = gradient.bounds
