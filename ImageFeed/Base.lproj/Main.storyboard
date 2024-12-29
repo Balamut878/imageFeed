@@ -313,7 +313,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="26i-Bf-Jcf" userLabel="webView">
-                                <rect key="frame" x="16" y="0.0" width="361" height="852"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                 <color key="backgroundColor" name="YP White"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -330,8 +330,8 @@
                         <constraints>
                             <constraint firstAttribute="bottomMargin" secondItem="26i-Bf-Jcf" secondAttribute="bottom" id="0hu-Fb-fBC"/>
                             <constraint firstItem="FZt-rH-r6m" firstAttribute="trailing" secondItem="2kU-YW-qHy" secondAttribute="trailing" id="92E-si-ndy"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="26i-Bf-Jcf" secondAttribute="trailing" id="Gwu-R6-aia"/>
-                            <constraint firstItem="26i-Bf-Jcf" firstAttribute="leading" secondItem="1Dg-NR-YyR" secondAttribute="leadingMargin" id="beL-ID-ON7"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="26i-Bf-Jcf" secondAttribute="trailing" constant="-16" id="Gwu-R6-aia"/>
+                            <constraint firstItem="26i-Bf-Jcf" firstAttribute="leading" secondItem="1Dg-NR-YyR" secondAttribute="leadingMargin" constant="-16" id="beL-ID-ON7"/>
                             <constraint firstItem="2kU-YW-qHy" firstAttribute="leading" secondItem="FZt-rH-r6m" secondAttribute="leading" id="cQk-x1-jfD"/>
                             <constraint firstItem="26i-Bf-Jcf" firstAttribute="top" secondItem="FZt-rH-r6m" secondAttribute="top" id="juC-DR-1T5"/>
                             <constraint firstItem="2kU-YW-qHy" firstAttribute="top" secondItem="FZt-rH-r6m" secondAttribute="top" id="kRu-1I-xzQ"/>
@@ -345,7 +345,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CnB-Eh-hJI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1378" y="-1068"/>
+            <point key="canvasLocation" x="1377.8625954198474" y="-1068.3098591549297"/>
         </scene>
         <!--Splash View Controller-->
         <scene sceneID="pYH-Y4-3Ni">
