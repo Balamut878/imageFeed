@@ -41,23 +41,11 @@ final class ProfileImageService {
         }
         task?.cancel()
         
-        let session = URLSession.shared
-        task = session.dataTask(with: request) { [weak self] data, response, error in
+        task = URLSession.shared.objectTask(for: request) { [ weak self] (result: Result<UserResult, Error>) in
             guard let self = self else { return }
             
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            guard let data = data,
-                  let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
-                let error = NSError(domain: "ProfileImageService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
-                completion(.failure(error))
-                return
-            }
-            do {
-                let userResult = try JSONDecoder().decode(UserResult.self, from: data)
+            switch result {
+            case .success( let userResult):
                 let smallImageURL = userResult.profileImage.small
                 self.avatarURL = smallImageURL
                 
@@ -69,7 +57,9 @@ final class ProfileImageService {
                     )
                 }
                 completion(.success(smallImageURL))
-            } catch {
+                
+            case .failure(let error):
+                print("fetchProfileImageURL ошибка: \(error)")
                 completion(.failure(error))
             }
         }

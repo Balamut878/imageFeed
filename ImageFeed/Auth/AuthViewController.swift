@@ -71,12 +71,25 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 print("Успешно получен токен: \(token)")
             case .failure(let error):
                 print("Ошибка авторизации: \(error.localizedDescription)")
+                self.showAuthErrorAlert()
             }
         }
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         dismiss(animated: true)
+    }
+    private func showAuthErrorAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(
+            title: "ОК",
+            style: .default,
+            handler: nil))
+        present(alert, animated: true)
     }
 }
 

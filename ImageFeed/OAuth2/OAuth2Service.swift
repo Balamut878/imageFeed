@@ -89,41 +89,23 @@ final class OAuth2Service {
             return
         }
         
-        let task = urlSession.dataTask(with: request) { [weak self] data, response , error in
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 self.task = nil
                 self.lastCode = nil
                 
-                if let error = error {
-                    print("Ошибка сети или запроса: \(error.localizedDescription)")
-                    self.completeAll(with: .failure(error))
-                    return
-                }
-                guard
-                    let data = data,
-                    let httpResponse = response as? HTTPURLResponse,
-                    httpResponse.statusCode == 200
-                else {
-                    let error = AuthServiceError.invalidRequest
-                    self.completeAll(with: .failure(error))
-                    return
-                }
-                
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let tokenResponse = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    
+                switch result {
+                case .success(let tokenResponse):
                     self.tokenStorage.token = tokenResponse.accessToken
-                    self.completeAll(with: .success(tokenResponse.accessToken))
-                } catch {
-                    print("Ошибка декодирования ответа: \(error.localizedDescription)")
+                    self .completeAll(with: .success(tokenResponse.accessToken))
+                    
+                case .failure(let error):
+                    print("fetchOAuthToken ошибка: \(error)")
                     self.completeAll(with: .failure(error))
                 }
             }
         }
-        
         self.task = task
         task.resume()
     }

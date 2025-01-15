@@ -19,35 +19,26 @@ final class ProfileService {
         task?.cancel()
 
         guard let request = makeProfileRequest(with: token) else {
-            completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
+            let error = NSError(domain: "ProfileService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+            completion(.failure(error))
             return
         }
 
-        task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-
-            guard let data = data,
-                  let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
-                completion(.failure(NSError(domain: "Invalid response", code: -1, userInfo: nil)))
-                return
-            }
-
-            do {
-                let result = try JSONDecoder().decode(ProfileResult.self, from: data)
-                let profile = Profile(result: result)
-                
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let profileResult):
+                let profile = Profile(result: profileResult)
                 self.profile = profile
                 completion(.success(profile))
-            } catch {
+            case .failure(let error):
+                print("fetchProfile ошибка: \(error)")
                 completion(.failure(error))
             }
         }
-
-        task?.resume()
+        self.task = task
+        task.resume()
     }
 
     private func makeProfileRequest(with token: String) -> URLRequest? {
