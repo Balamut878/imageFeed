@@ -7,17 +7,16 @@
 
 import Foundation
 
+enum AuthServiceError: Error {
+    case invalidRequest
+}
+
 struct OAuthTokenResponseBody: Decodable {
     let accessToken: String
     let tokenType: String
     let createdAt: Int
-    
-    enum CodingKeys: String, CodingKey {
-        case accessToken = "access_token"
-        case tokenType = "token_type"
-        case createdAt = "created_at"
-    }
 }
+
 
 final class OAuth2TokenStorage {
     private let tokenKey = "Bearer Token"
@@ -37,7 +36,12 @@ final class OAuth2Service {
     static let shared = OAuth2Service()
     private init() {}
     
+    private let urlSession = URLSession.shared
     private let tokenStorage = OAuth2TokenStorage()
+    
+    private var task: URLSessionTask?
+    private var lastCode: String?
+    private var completionHandlers: [(Result<String,Error>) -> Void] = []
     
     func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard let baseURL = URL(string: "https://unsplash.com") else {
@@ -60,31 +64,67 @@ final class OAuth2Service {
         request.httpMethod = "POST"
         return request
     }
+    private func completeAll(with result: Result<String, Error>) {
+        completionHandlers.forEach{ $0(result) }
+        completionHandlers = []
+    }
     
-    func fetchOAuthToken(with code: String, completion: @escaping (Result<String, Error>) -> Void) {
+    func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        
+        if let currentTask = task, lastCode == code {
+            completionHandlers.append(completion)
+            return
+        }
+        if let currentTask = task {
+            currentTask.cancel()
+        }
+        
+        lastCode  = code
+        completionHandlers = [completion]
+        
         guard let request = makeOAuthTokenRequest(code: code) else {
-            let error = NSError(domain: "OAuth2Service",
-                                code: -1,
-                                userInfo: [NSLocalizedDescriptionKey: "Ошибка создания запроса для получения токена"])
-            completion(.failure(error))
+            let error = AuthServiceError.invalidRequest
+            completeAll(with: .failure(error))
             return
         }
         
-        URLSession.shared.data(for: request) { [weak self] result in
-            switch result {
-            case .success(let data):
+        let task = urlSession.dataTask(with: request) { [weak self] data, response , error in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.task = nil
+                self.lastCode = nil
+                
+                if let error = error {
+                    print("Ошибка сети или запроса: \(error.localizedDescription)")
+                    self.completeAll(with: .failure(error))
+                    return
+                }
+                guard
+                    let data = data,
+                    let httpResponse = response as? HTTPURLResponse,
+                    httpResponse.statusCode == 200
+                else {
+                    let error = AuthServiceError.invalidRequest
+                    self.completeAll(with: .failure(error))
+                    return
+                }
+                
                 do {
-                    let tokenResponse = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: data)
-                    self?.tokenStorage.token = tokenResponse.accessToken
-                    completion(.success(tokenResponse.accessToken))
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    let tokenResponse = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+                    
+                    self.tokenStorage.token = tokenResponse.accessToken
+                    self.completeAll(with: .success(tokenResponse.accessToken))
                 } catch {
                     print("Ошибка декодирования ответа: \(error.localizedDescription)")
-                    completion(.failure(error))
+                    self.completeAll(with: .failure(error))
                 }
-            case .failure(let error):
-                print("Ошибка сети или запроса: \(error.localizedDescription)")
-                completion(.failure(error))
             }
-        }.resume()
+        }
+        
+        self.task = task
+        task.resume()
     }
 }

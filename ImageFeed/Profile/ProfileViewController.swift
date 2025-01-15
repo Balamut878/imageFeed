@@ -18,21 +18,21 @@ final class ProfileViewController: UIViewController {
     
     private let nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Екатерина Новикова"
+        label.text = ""
         label.font = UIFont.boldSystemFont(ofSize: 23)
         label.textColor = UIColor(resource: .ypWhite)
         return label
     }()
     private let loginNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "@ekaterina_nov"
+        label.text = ""
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = UIColor(resource: .ypGrey)
         return label
     }()
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "Hello, world!"
+        label.text = ""
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = UIColor(resource: .ypWhite)
         return label
@@ -43,14 +43,38 @@ final class ProfileViewController: UIViewController {
         return button
     }()
     
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupViews()
         setupLayouts()
         setupAppearance()
+        
+        if let profile = ProfileService.shared.profile {
+            updateUI(with: profile)
+        }
+        
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self else { return }
+            
+            if let urlFromUserInfo = notification.userInfo?["URL"] as? String {
+                print("Новая аватарка:", urlFromUserInfo)
+                self.setAvatarImageWithUrlString(urlFromUserInfo)
+            }
+        }
     }
     
+    deinit {
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
     private func setupViews() {[
         avatarImageView,
         nameLabel,
@@ -90,6 +114,15 @@ final class ProfileViewController: UIViewController {
     }
     private func setupAppearance() {
         avatarImageView.layer.cornerRadius = avatarImageView.bounds.width / 2
+        avatarImageView.clipsToBounds = true
         view.backgroundColor = UIColor(resource: .ypBlack)
+    }
+    private func updateUI(with profile: Profile) {
+        nameLabel.text = profile.name
+        loginNameLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio ?? "Нет описания"
+    }
+    private func setAvatarImageWithUrlString(_ urlString: String) {
+        print("Загружаем картинку по URL: \(urlString)")
     }
 }
