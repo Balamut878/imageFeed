@@ -51,7 +51,6 @@
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="bOH-gP-rDG" secondAttribute="trailing" id="63C-DH-8gn"/>
-                                                        <constraint firstAttribute="width" constant="361" id="LXj-KP-QTP"/>
                                                         <constraint firstItem="bOH-gP-rDG" firstAttribute="leading" secondItem="LMa-th-jyW" secondAttribute="leading" constant="8" id="WJX-LS-vpS"/>
                                                         <constraint firstItem="bOH-gP-rDG" firstAttribute="top" secondItem="LMa-th-jyW" secondAttribute="top" constant="4" id="aTb-PY-NRN"/>
                                                         <constraint firstAttribute="height" constant="30" id="bwL-tx-fDk"/>

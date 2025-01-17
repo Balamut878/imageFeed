@@ -6,13 +6,18 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
+    // MARK: Subviews
     
     private let avatarImageView: UIImageView = {
         let imageView = UIImageView()
+        // Зашлушка
         imageView.image = UIImage(resource: .photo)
+        // Обрезка содержимого
+        imageView.clipsToBounds = true
         return imageView
     }()
     
@@ -42,8 +47,10 @@ final class ProfileViewController: UIViewController {
         button.setImage(.exit, for: .normal)
         return button
     }()
-    
+    // Наблюдатель для уведомления об обновление аватарки
     private var profileImageServiceObserver: NSObjectProtocol?
+    
+    // MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,10 +59,13 @@ final class ProfileViewController: UIViewController {
         setupLayouts()
         setupAppearance()
         
+        // Если профиль уже есть
         if let profile = ProfileService.shared.profile {
             updateUI(with: profile)
+            //Дополнительный запрос на обновление аватарки
+            ProfileImageService.shared.fetchProfileImageURL(userName: profile.username) { _ in }
         }
-        
+        // Подписываемся на уведомление о новой аватарке
         profileImageServiceObserver = NotificationCenter.default.addObserver(
             forName: ProfileImageService.didChangeNotification,
             object: nil,
@@ -75,6 +85,14 @@ final class ProfileViewController: UIViewController {
             NotificationCenter.default.removeObserver(observer)
         }
     }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Делаю аватарку круглой
+        avatarImageView.layer.cornerRadius = avatarImageView.frame.width / 2
+    }
+    
+    // MARK: UI Setup
+    
     private func setupViews() {[
         avatarImageView,
         nameLabel,
@@ -113,16 +131,28 @@ final class ProfileViewController: UIViewController {
         ])
     }
     private func setupAppearance() {
-        avatarImageView.layer.cornerRadius = avatarImageView.bounds.width / 2
-        avatarImageView.clipsToBounds = true
+        // Цвет фона
         view.backgroundColor = UIColor(resource: .ypBlack)
     }
+    
+    // MARK: Update UI
+    
     private func updateUI(with profile: Profile) {
         nameLabel.text = profile.name
         loginNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio ?? "Нет описания"
+        if let avatarURLString = profile.avatarURL {
+            setAvatarImageWithUrlString(avatarURLString)
+        }
     }
     private func setAvatarImageWithUrlString(_ urlString: String) {
-        print("Загружаем картинку по URL: \(urlString)")
+        guard let url = URL(string: urlString) else { return }
+        
+        avatarImageView.kf.setImage(
+            with: url,
+            placeholder: UIImage(resource: .photo),
+            options: [.cacheOriginalImage]
+        )
     }
 }
+

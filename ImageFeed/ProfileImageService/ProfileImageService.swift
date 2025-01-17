@@ -67,11 +67,13 @@ final class ProfileImageService {
     }
 }
 struct UserResult: Codable {
-    let profileImage: ProfileImage
+    let profileImage: UserProfileImage
+    
     enum CodingKeys: String, CodingKey {
         case profileImage = "profile_image"
     }
 }
-struct ProfileImage: Codable {
+struct UserProfileImage: Codable {
     let small: String
 }
+
