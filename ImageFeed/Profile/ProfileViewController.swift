@@ -6,33 +6,38 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
+    // MARK: Subviews
     
     private let avatarImageView: UIImageView = {
         let imageView = UIImageView()
+        // Зашлушка
         imageView.image = UIImage(resource: .photo)
+        // Обрезка содержимого
+        imageView.clipsToBounds = true
         return imageView
     }()
     
     private let nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Екатерина Новикова"
+        label.text = ""
         label.font = UIFont.boldSystemFont(ofSize: 23)
         label.textColor = UIColor(resource: .ypWhite)
         return label
     }()
     private let loginNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "@ekaterina_nov"
+        label.text = ""
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = UIColor(resource: .ypGrey)
         return label
     }()
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "Hello, world!"
+        label.text = ""
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = UIColor(resource: .ypWhite)
         return label
@@ -42,6 +47,10 @@ final class ProfileViewController: UIViewController {
         button.setImage(.exit, for: .normal)
         return button
     }()
+    // Наблюдатель для уведомления об обновление аватарки
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
+    // MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +58,40 @@ final class ProfileViewController: UIViewController {
         setupViews()
         setupLayouts()
         setupAppearance()
+        
+        // Если профиль уже есть
+        if let profile = ProfileService.shared.profile {
+            updateUI(with: profile)
+            //Дополнительный запрос на обновление аватарки
+            ProfileImageService.shared.fetchProfileImageURL(userName: profile.username) { _ in }
+        }
+        // Подписываемся на уведомление о новой аватарке
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self else { return }
+            
+            if let urlFromUserInfo = notification.userInfo?["URL"] as? String {
+                print("Новая аватарка:", urlFromUserInfo)
+                self.setAvatarImageWithUrlString(urlFromUserInfo)
+            }
+        }
     }
+    
+    deinit {
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Делаю аватарку круглой
+        avatarImageView.layer.cornerRadius = avatarImageView.frame.width / 2
+    }
+    
+    // MARK: UI Setup
     
     private func setupViews() {[
         avatarImageView,
@@ -89,7 +131,28 @@ final class ProfileViewController: UIViewController {
         ])
     }
     private func setupAppearance() {
-        avatarImageView.layer.cornerRadius = avatarImageView.bounds.width / 2
+        // Цвет фона
         view.backgroundColor = UIColor(resource: .ypBlack)
     }
+    
+    // MARK: Update UI
+    
+    private func updateUI(with profile: Profile) {
+        nameLabel.text = profile.name
+        loginNameLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio ?? "Нет описания"
+        if let avatarURLString = profile.avatarURL {
+            setAvatarImageWithUrlString(avatarURLString)
+        }
+    }
+    private func setAvatarImageWithUrlString(_ urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        
+        avatarImageView.kf.setImage(
+            with: url,
+            placeholder: UIImage(resource: .photo),
+            options: [.cacheOriginalImage]
+        )
+    }
 }
+

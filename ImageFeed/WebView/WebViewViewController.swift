@@ -4,8 +4,6 @@
 //
 //  Created by Александр Дудченко on 25.12.2024.
 //
-
-import Foundation
 import UIKit
 import WebKit
 
@@ -20,53 +18,19 @@ final class WebViewViewController: UIViewController {
     
     weak var delegate: WebViewViewControllerDelegate?
     
+    private var estimatedProgressObservation: NSKeyValueObservation?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupWebView()
-        loadAuthView()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        observeProgress()
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        removeProgressObserver()
-    }
-    
-    // MARK: - Private Methods
-    
-    private func setupWebView() {
+        
         webView.navigationDelegate = self
-    }
-    
-    private func observeProgress() {
-        webView.addObserver(
-            self,
-            forKeyPath: #keyPath(WKWebView.estimatedProgress),
-            options: .new,
-            context: nil
-        )
-        updateProgress()
-    }
-    
-    private func removeProgressObserver() {
-        webView.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), context: nil)
-    }
-    
-    override func observeValue(
-        forKeyPath keyPath: String?,
-        of object: Any?,
-        change: [NSKeyValueChangeKey : Any]?,
-        context: UnsafeMutableRawPointer?
-    ) {
-        if keyPath == #keyPath(WKWebView.estimatedProgress) {
-            updateProgress()
-        } else {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        
+        // Новый Swift-подход к KVO
+        estimatedProgressObservation = webView.observe(\.estimatedProgress, options: .new) { [weak self] webView, _ in
+            self?.updateProgress()
         }
+        
+        loadAuthView()
     }
     
     private func updateProgress() {
@@ -99,7 +63,7 @@ final class WebViewViewController: UIViewController {
     private func code(from navigationAction: WKNavigationAction) -> String? {
         guard
             let url = navigationAction.request.url,
-            let urlComponents = URLComponents(string: url.absoluteString),
+            let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
             urlComponents.path == "/oauth/authorize/native",
             let codeItem = urlComponents.queryItems?.first(where: { $0.name == "code" })
         else {

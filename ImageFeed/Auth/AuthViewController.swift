@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ProgressHUD
 
 final class AuthViewController: UIViewController {
     
@@ -26,6 +27,7 @@ final class AuthViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
             return
         }
+        guard !UIBlockingProgressHUD.isDisplayed() else { return }
         
         guard let webViewViewController = segue.destination as? WebViewViewController else {
             assertionFailure("Failed to prepare for \(identifier)")
@@ -53,8 +55,15 @@ protocol AuthViewControllerDelegate: AnyObject {
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        oauth2Service.fetchOAuthToken(with: code) { [weak self] result in
+        vc.dismiss(animated: true)
+        
+        UIBlockingProgressHUD.show()
+        
+        oauth2Service.fetchOAuthToken(code) { [weak self] result in
             guard let self = self else { return }
+            
+            UIBlockingProgressHUD.dismiss()
+            
             switch result {
             case .success(let token):
                 self.oauth2TokenStorage.token = token
@@ -62,12 +71,25 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 print("Успешно получен токен: \(token)")
             case .failure(let error):
                 print("Ошибка авторизации: \(error.localizedDescription)")
+                self.showAuthErrorAlert()
             }
         }
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         dismiss(animated: true)
+    }
+    private func showAuthErrorAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(
+            title: "ОК",
+            style: .default,
+            handler: nil))
+        present(alert, animated: true)
     }
 }
 
