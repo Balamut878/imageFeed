@@ -15,6 +15,12 @@ final class ProfileService {
     
     private(set) var profile: Profile?
     
+    func clean() {
+        profile = nil
+        task?.cancel()
+        task = nil
+    }
+    
     func fetchProfile(token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         task?.cancel()
         

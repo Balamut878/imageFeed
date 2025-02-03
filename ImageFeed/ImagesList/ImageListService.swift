@@ -20,6 +20,12 @@ final class ImagesListService {
     static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
     
     private init() {}
+    
+    func clean() {
+        photos = []
+        lastLoadedPage = nil
+        isLoading = false
+    }
 
     func changeLike(photoId: String, isLike: Bool, completion: @escaping (Result<Void, Error>) -> Void) {
         let method = isLike ? "POST" : "DELETE"
