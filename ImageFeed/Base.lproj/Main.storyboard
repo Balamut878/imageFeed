@@ -246,7 +246,7 @@
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="86c-dm-OEb" kind="presentation" identifier="ShowWebView" modalPresentationStyle="fullScreen" modalTransitionStyle="coverVertical" id="MJH-Y7-fs3"/>
+                                    <segue destination="86c-dm-OEb" kind="show" identifier="ShowWebView" id="MJH-Y7-fs3"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -270,7 +270,7 @@
         <!--Navigation Controller-->
         <scene sceneID="sqI-JL-3bB">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="36P-2q-AmW" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="AuthNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="36P-2q-AmW" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="dlM-27-6uW"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="rOc-zi-CFV">
@@ -295,7 +295,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="26i-Bf-Jcf" userLabel="webView">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <rect key="frame" x="0.0" y="103" width="393" height="715"/>
                                 <color key="backgroundColor" name="YP White"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -303,7 +303,7 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="2kU-YW-qHy">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="4"/>
+                                <rect key="frame" x="0.0" y="103" width="393" height="4"/>
                                 <color key="tintColor" name="YP Black"/>
                             </progressView>
                         </subviews>

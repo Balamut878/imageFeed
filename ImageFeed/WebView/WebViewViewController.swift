@@ -4,6 +4,7 @@
 //
 //  Created by Александр Дудченко on 25.12.2024.
 //
+
 import UIKit
 import WebKit
 
@@ -25,9 +26,10 @@ final class WebViewViewController: UIViewController {
         
         webView.navigationDelegate = self
         
-        // Новый Swift-подход к KVO
-        estimatedProgressObservation = webView.observe(\.estimatedProgress, options: .new) { [weak self] webView, _ in
-            self?.updateProgress()
+        // Наблюдаем за процентом загрузки (для прогресс-бара)
+        estimatedProgressObservation = webView.observe(\.estimatedProgress,
+            options: .new) { [weak self] _, _ in
+                self?.updateProgress()
         }
         
         loadAuthView()
@@ -38,12 +40,12 @@ final class WebViewViewController: UIViewController {
         progressView.isHidden = abs(webView.estimatedProgress - 1.0) <= 0.0001
     }
     
+    /// Загружаем страницу логина Unsplash
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
-            print("Ошибка: не удалось создать URL-компоненты")
+            print("Ошибка: не удалось создать URL для авторизации")
             return
         }
-        
         urlComponents.queryItems = [
             URLQueryItem(name: "client_id", value: Constants.accessKey),
             URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
@@ -52,14 +54,14 @@ final class WebViewViewController: UIViewController {
         ]
         
         guard let url = urlComponents.url else {
-            print("Ошибка: не удалось создать URL")
+            print("Ошибка: не удалось сформировать URL")
             return
         }
-        
         let request = URLRequest(url: url)
         webView.load(request)
     }
     
+    /// Извлекаем ?code=... из редиректа
     private func code(from navigationAction: WKNavigationAction) -> String? {
         guard
             let url = navigationAction.request.url,
@@ -75,13 +77,12 @@ final class WebViewViewController: UIViewController {
 }
 
 // MARK: - WKNavigationDelegate
-
 extension WebViewViewController: WKNavigationDelegate {
-    func webView(
-        _ webView: WKWebView,
-        decidePolicyFor navigationAction: WKNavigationAction,
-        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
-    ) {
+    func webView(_ webView: WKWebView,
+                 decidePolicyFor navigationAction: WKNavigationAction,
+                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
+    {
+        // Если есть code, передаём делегату
         if let code = code(from: navigationAction) {
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
@@ -92,8 +93,9 @@ extension WebViewViewController: WKNavigationDelegate {
 }
 
 // MARK: - Protocol
-
 protocol WebViewViewControllerDelegate: AnyObject {
+    /// Вызывается, когда Unsplash вернул код
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
+    /// Вызывается, если пользователь отменил/вышел из WebView
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
