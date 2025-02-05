@@ -94,13 +94,27 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc private func didTapLogoutButton() {
-        print("Нажали кнопку выход")    // УДАЛИТЬ!!!
+        let alertController = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
         
-        ProfileLogoutService.shared.logout()
+        let yesAction = UIAlertAction(title: "Да", style: .destructive) { _ in
+            // Выход из аккаунта
+            ProfileLogoutService.shared.logout()
+            // Переход на экран авторизации
+            self.switchToAuthViewController()
+        }
         
-        switchToAuthViewController()
+        let noAction = UIAlertAction(title: "Нет", style: .cancel, handler: nil)
+        
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+        
+        present(alertController, animated: true)
     }
-    
+        
     private func switchToAuthViewController() {
         // Предположим, что у вас AuthViewController в storyboard с id "AuthViewController"
         guard let window = UIApplication.shared.windows.first else { return }

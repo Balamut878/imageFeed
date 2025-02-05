@@ -81,6 +81,9 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 
                 // Уведомляем делегата (обычно Splash), что авторизация прошла
                 self.delegate?.didAuthenticate(self, didAuthenticateWithCode: token)
+                
+                self.restartAppAfterLogin()
+                
             case .failure(let error):
                 print("Ошибка авторизации: \(error.localizedDescription)")
                 // Показываем Alert
@@ -103,5 +106,13 @@ extension AuthViewController: WebViewViewControllerDelegate {
         )
         alert.addAction(UIAlertAction(title: "ОК", style: .default, handler: nil))
         present(alert, animated: true)
+    }
+    
+    private func restartAppAfterLogin() {
+        guard let window = UIApplication.shared.windows.first else { return }
+        
+        let splashVC = SplashViewController()
+        window.rootViewController = splashVC
+        window.makeKeyAndVisible()
     }
 }
