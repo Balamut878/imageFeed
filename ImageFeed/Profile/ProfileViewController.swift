@@ -114,7 +114,7 @@ final class ProfileViewController: UIViewController {
         
         present(alertController, animated: true)
     }
-        
+    
     private func switchToAuthViewController() {
         // Предположим, что у вас AuthViewController в storyboard с id "AuthViewController"
         guard let window = UIApplication.shared.windows.first else { return }

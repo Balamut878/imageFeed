@@ -26,7 +26,7 @@ final class ImagesListService {
         lastLoadedPage = nil
         isLoading = false
     }
-
+    
     func changeLike(photoId: String, isLike: Bool, completion: @escaping (Result<Void, Error>) -> Void) {
         let method = isLike ? "POST" : "DELETE"
         guard let url = URL(string: "https://api.unsplash.com/photos/\(photoId)/like") else { return }
@@ -58,7 +58,7 @@ final class ImagesListService {
             }
         }.resume()
     }
-
+    
     func fetchPhotosNextPage() {
         guard !isLoading else { return }
         isLoading = true
@@ -111,10 +111,11 @@ final class ImagesListService {
                 }
                 
                 for (index, p) in newPhotos.enumerated() {
-                    print("[DEBUG] Загрузили фото \(index): id = \(p.id), isLiked = \(p.isLiked)") // УДАЛИТЬ!!!
                 }
                 DispatchQueue.main.async {
                     self.photos.append(contentsOf: newPhotos)
+                    
+                    self.photos.sort { ($0.createdAt ?? Date.distantPast) > ($1.createdAt ?? Date.distantPast) }
                     self.lastLoadedPage = nextPage
                     NotificationCenter.default.post(name: ImagesListService.didChangeNotification, object: nil)
                 }

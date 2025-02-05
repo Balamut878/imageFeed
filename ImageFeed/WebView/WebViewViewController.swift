@@ -26,10 +26,9 @@ final class WebViewViewController: UIViewController {
         
         webView.navigationDelegate = self
         
-        // Наблюдаем за процентом загрузки (для прогресс-бара)
         estimatedProgressObservation = webView.observe(\.estimatedProgress,
-            options: .new) { [weak self] _, _ in
-                self?.updateProgress()
+                                                        options: .new) { [weak self] _, _ in
+            self?.updateProgress()
         }
         
         loadAuthView()
@@ -40,7 +39,6 @@ final class WebViewViewController: UIViewController {
         progressView.isHidden = abs(webView.estimatedProgress - 1.0) <= 0.0001
     }
     
-    /// Загружаем страницу логина Unsplash
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
             print("Ошибка: не удалось создать URL для авторизации")
@@ -61,7 +59,6 @@ final class WebViewViewController: UIViewController {
         webView.load(request)
     }
     
-    /// Извлекаем ?code=... из редиректа
     private func code(from navigationAction: WKNavigationAction) -> String? {
         guard
             let url = navigationAction.request.url,
@@ -82,7 +79,6 @@ extension WebViewViewController: WKNavigationDelegate {
                  decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
     {
-        // Если есть code, передаём делегату
         if let code = code(from: navigationAction) {
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
@@ -94,8 +90,6 @@ extension WebViewViewController: WKNavigationDelegate {
 
 // MARK: - Protocol
 protocol WebViewViewControllerDelegate: AnyObject {
-    /// Вызывается, когда Unsplash вернул код
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
-    /// Вызывается, если пользователь отменил/вышел из WebView
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }

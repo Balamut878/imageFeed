@@ -48,20 +48,20 @@ struct Photo: Decodable {
     }
     
     init(
-           id: String,
-           size: CGSize,
-           createdAt: Date?,
-           description: String?,
-           thumbImageURL: String,
-           largeImageURL: String,
-           isLiked: Bool
-       ) {
-           self.id = id
-           self.size = size
-           self.createdAt = createdAt
-           self.description = description
-           self.thumbImageURL = thumbImageURL
-           self.largeImageURL = largeImageURL
-           self.isLiked = isLiked
-       }
-   }
+        id: String,
+        size: CGSize,
+        createdAt: Date?,
+        description: String?,
+        thumbImageURL: String,
+        largeImageURL: String,
+        isLiked: Bool
+    ) {
+        self.id = id
+        self.size = size
+        self.createdAt = createdAt
+        self.description = description
+        self.thumbImageURL = thumbImageURL
+        self.largeImageURL = largeImageURL
+        self.isLiked = isLiked
+    }
+}

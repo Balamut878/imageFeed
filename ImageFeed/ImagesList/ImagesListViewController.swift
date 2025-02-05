@@ -45,7 +45,6 @@ final class ImagesListViewController: UIViewController {
             NotificationCenter.default.removeObserver(observer)
         }
     }
-    // Переход к полноэкранному фото 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showSingleImageSegueIdentifier {
             guard
@@ -61,16 +60,10 @@ final class ImagesListViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
-    // Метод который добавляет новые строки в таблицу
     private func updateTableViewAnimated() {
-        // Запоминаем сколько было фото до обновления
         let oldCount = photos.count
-        // Смотрим сколько стало
         let newCount = imagesListService.photos.count
-        // Обновляем массив
         photos = imagesListService.photos
-        
-        print("Обновление таблицы: старый счетчик = \(oldCount), новый счетчик = \(newCount)") // УДАЛИТЬ!!!
         
         if oldCount != newCount {
             tableView.performBatchUpdates {
@@ -83,14 +76,11 @@ final class ImagesListViewController: UIViewController {
 
 // MARK: UITableViewDataSource
 extension ImagesListViewController: UITableViewDataSource {
-    // Сколько строк в таблице
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return photos.count
     }
-    // Настройка каждой ячейки
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath) as! ImagesListCell
-        // Настраиваем содержимое
         configCell(for: cell, with: indexPath)
         return cell
     }
@@ -103,11 +93,11 @@ extension ImagesListViewController: UITableViewDelegate {
             imagesListService.fetchPhotosNextPage()
         }
     }
-    // Переход к полноразмерному фото
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
     }
-    // Возвращаем высоту ячейки
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let photo = photos[indexPath.row]
         
@@ -124,22 +114,18 @@ extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         let photo = photos[indexPath.row]
         
-        print("Настройка ячейки \(indexPath.row) с фото \(photo.id)") // УДАЛИТЬ!!!
-        
-        // Показываем индикатор загрузки
         cell.imageCell.kf.indicatorType = .activity
         
-        // Загрузка изображения с placeholder
         if let url = URL(string: photo.thumbImageURL) {
             cell.imageCell.kf.setImage(with:url, placeholder: UIImage(named: "placeholder"))
         }
-        // Форматирование даты
+        
         if let createdAt = photo.createdAt {
             cell.dataLabel.text = dateFormatter.string(from: createdAt)
         } else {
             cell.dataLabel.text = "Неизвестная дата"
         }
-        // Обновляем состояние лайка
+        
         cell.setIsLiked(photo.isLiked)
         
         cell.delegate = self
@@ -150,12 +136,11 @@ extension ImagesListViewController: ImagesListCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let photo = photos[indexPath.row]
         
-        // Блокируем
         UIBlockingProgressHUD.show()
-
+        
         imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
             guard let self = self else { return }
-            // Скрываем лоадер
+            
             defer {
                 UIBlockingProgressHUD.dismiss()
             }

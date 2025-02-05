@@ -53,7 +53,6 @@ final class ImagesListCell: UITableViewCell {
         imageCell.image = nil
     }
     @IBAction private func likeButtonClicked() {
-        print("[DEBUG] Нажали на кнопку лайка в ячейке!") // УДАЛИТЬ!!!
         delegate?.imageListCellDidTapLike(self)
     }
     

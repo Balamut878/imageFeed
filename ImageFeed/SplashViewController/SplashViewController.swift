@@ -15,17 +15,17 @@ final class SplashViewController: UIViewController {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-
+    
     // MARK: - Services
     private let oAuth2Service = OAuth2Service.shared
     private let oAuth2TokenStorage = OAuth2TokenStorage()
     private let profileService = ProfileService.shared
-
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
-
+        
         view.addSubview(logoImageView)
         NSLayoutConstraint.activate([
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -34,22 +34,20 @@ final class SplashViewController: UIViewController {
             logoImageView.heightAnchor.constraint(equalToConstant: 200)
         ])
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        // Если токен уже есть, сразу грузим профиль и переходим в ленту
+        
         if let token = oAuth2TokenStorage.token {
             fetchProfile(token: token)
         } else {
             showAuthViewController()
         }
     }
-
+    
     // MARK: - Показываем Auth
     private func showAuthViewController() {
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        // Достаём UINavigationController, у которого root = AuthViewController
         guard let navController = storyboard.instantiateViewController(
             withIdentifier: "AuthNavigationController"
         ) as? UINavigationController else {
@@ -58,13 +56,12 @@ final class SplashViewController: UIViewController {
         guard let authVC = navController.viewControllers.first as? AuthViewController else {
             fatalError("AuthViewController не найден как root в AuthNavigationController")
         }
-        // Становимся делегатом AuthViewController
         authVC.delegate = self
-
+        
         navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true)
     }
-
+    
     // MARK: - Получение профиля и переход на TabBar
     private func fetchProfile(token: String) {
         UIBlockingProgressHUD.show()
@@ -72,7 +69,7 @@ final class SplashViewController: UIViewController {
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 UIBlockingProgressHUD.dismiss()
-
+                
                 switch result {
                 case .success(let profile):
                     ProfileImageService.shared.fetchProfileImageURL(
@@ -85,7 +82,7 @@ final class SplashViewController: UIViewController {
             }
         }
     }
-
+    
     private func switchToTabBarController() {
         guard let window = UIApplication.shared.windows.first else {
             fatalError("Ошибка: нет окна приложения")
@@ -97,8 +94,7 @@ final class SplashViewController: UIViewController {
         }
         window.rootViewController = tabBarController
     }
-
-    // Если получили code, вызываем fetchOAuthToken
+    
     private func fetchOAuthToken(_ code: String) {
         oAuth2Service.fetchOAuthToken(code) { [weak self] result in
             guard let self = self else { return }
@@ -115,10 +111,8 @@ final class SplashViewController: UIViewController {
 // MARK: - AuthViewControllerDelegate
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
-        // Закрываем весь Auth (Navigation Controller)
         dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
-            // И когда закроем, запустим получение профиля
             self.fetchOAuthToken(code)
         }
     }
