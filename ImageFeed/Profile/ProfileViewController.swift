@@ -59,6 +59,8 @@ final class ProfileViewController: UIViewController {
         setupLayouts()
         setupAppearance()
         
+        logoutButton.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
+        
         // Если профиль уже есть
         if let profile = ProfileService.shared.profile {
             updateUI(with: profile)
@@ -89,6 +91,44 @@ final class ProfileViewController: UIViewController {
         super.viewDidLayoutSubviews()
         // Делаю аватарку круглой
         avatarImageView.layer.cornerRadius = avatarImageView.frame.width / 2
+    }
+    
+    @objc private func didTapLogoutButton() {
+        let alertController = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        let yesAction = UIAlertAction(title: "Да", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            // Выход из аккаунта
+            ProfileLogoutService.shared.logout()
+            // Переход на экран авторизации
+            self.switchToAuthViewController()
+        }
+        
+        let noAction = UIAlertAction(title: "Нет", style: .cancel, handler: nil)
+        
+        alertController.addAction(yesAction)
+        alertController.addAction(noAction)
+        
+        present(alertController, animated: true)
+    }
+    
+    private func switchToAuthViewController() {
+        // Предположим, что у вас AuthViewController в storyboard с id "AuthViewController"
+        guard let window = UIApplication.shared.windows.first else { return }
+        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+        
+        // Создаём/находим контроллер авторизации
+        guard let authVC = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController else {
+            return
+        }
+        
+        // Ставим AuthViewController корневым
+        window.rootViewController = authVC
+        window.makeKeyAndVisible()
     }
     
     // MARK: UI Setup
@@ -154,5 +194,6 @@ final class ProfileViewController: UIViewController {
             options: [.cacheOriginalImage]
         )
     }
+    
+    
 }
-

@@ -4,6 +4,7 @@
 //
 //  Created by Александр Дудченко on 25.12.2024.
 //
+
 import UIKit
 import WebKit
 
@@ -25,8 +26,8 @@ final class WebViewViewController: UIViewController {
         
         webView.navigationDelegate = self
         
-        // Новый Swift-подход к KVO
-        estimatedProgressObservation = webView.observe(\.estimatedProgress, options: .new) { [weak self] webView, _ in
+        estimatedProgressObservation = webView.observe(\.estimatedProgress,
+                                                        options: .new) { [weak self] _, _ in
             self?.updateProgress()
         }
         
@@ -40,10 +41,9 @@ final class WebViewViewController: UIViewController {
     
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
-            print("Ошибка: не удалось создать URL-компоненты")
+            print("Ошибка: не удалось создать URL для авторизации")
             return
         }
-        
         urlComponents.queryItems = [
             URLQueryItem(name: "client_id", value: Constants.accessKey),
             URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
@@ -52,10 +52,9 @@ final class WebViewViewController: UIViewController {
         ]
         
         guard let url = urlComponents.url else {
-            print("Ошибка: не удалось создать URL")
+            print("Ошибка: не удалось сформировать URL")
             return
         }
-        
         let request = URLRequest(url: url)
         webView.load(request)
     }
@@ -75,13 +74,11 @@ final class WebViewViewController: UIViewController {
 }
 
 // MARK: - WKNavigationDelegate
-
 extension WebViewViewController: WKNavigationDelegate {
-    func webView(
-        _ webView: WKWebView,
-        decidePolicyFor navigationAction: WKNavigationAction,
-        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
-    ) {
+    func webView(_ webView: WKWebView,
+                 decidePolicyFor navigationAction: WKNavigationAction,
+                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
+    {
         if let code = code(from: navigationAction) {
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
@@ -92,7 +89,6 @@ extension WebViewViewController: WKNavigationDelegate {
 }
 
 // MARK: - Protocol
-
 protocol WebViewViewControllerDelegate: AnyObject {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
     func webViewViewControllerDidCancel(_ vc: WebViewViewController)
