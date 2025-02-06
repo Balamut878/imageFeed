@@ -19,6 +19,17 @@ final class ImagesListService {
     
     static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
     
+    private let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return decoder
+    }()
+    
+    private lazy var dateFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        return formatter
+    }()
+    
     private init() {}
     
     func clean() {
@@ -94,15 +105,13 @@ final class ImagesListService {
             }
             
             do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let photoResults = try decoder.decode([PhotoResult].self, from: data)
+                let photoResults = try self.decoder.decode([PhotoResult].self, from: data)
                 
                 let newPhotos = photoResults.map { photo in
                     Photo(
                         id: photo.id,
                         size: CGSize(width: photo.width, height: photo.height),
-                        createdAt: ISO8601DateFormatter().date(from: photo.createdAt ?? ""),
+                        createdAt: self.dateFormatter.date(from: photo.createdAt ?? ""),
                         description: photo.description,
                         thumbImageURL: photo.urls.thumb ?? "",
                         largeImageURL: photo.urls.full ?? "",
@@ -110,8 +119,6 @@ final class ImagesListService {
                     )
                 }
                 
-                for (index, p) in newPhotos.enumerated() {
-                }
                 DispatchQueue.main.async {
                     self.photos.append(contentsOf: newPhotos)
                     

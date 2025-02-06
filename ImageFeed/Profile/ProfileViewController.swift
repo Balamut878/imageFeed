@@ -100,7 +100,8 @@ final class ProfileViewController: UIViewController {
             preferredStyle: .alert
         )
         
-        let yesAction = UIAlertAction(title: "Да", style: .destructive) { _ in
+        let yesAction = UIAlertAction(title: "Да", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
             // Выход из аккаунта
             ProfileLogoutService.shared.logout()
             // Переход на экран авторизации
